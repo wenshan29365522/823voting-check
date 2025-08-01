@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <title>錄取查詢系統</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 40px;
+    }
+    input, button {
+      padding: 10px;
+      margin: 5px;
+    }
+    #result {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h2>投票所錄取查詢系統</h2>
+  <p>請輸入「姓名」與「身分證後四碼」查詢：</p>
+  <input type="text" id="name" placeholder="姓名" />
+  <input type="text" id="id4" placeholder="身分證後四碼" maxlength="4" />
+  <br>
+  <button onclick="search()">查詢</button>
+
+  <div id="result"></div>
+
+  <script>
+    let data = [];
+
+    // 載入資料
+    fetch("data.json")
+      .then(response => response.json())
+      .then(json => data = json);
+
+    function search() {
+      const name = document.getElementById("name").value.trim();
+      const id4 = document.getElementById("id4").value.trim().padStart(4, '0');
+      const resultBox = document.getElementById("result");
+
+      if (!name || !id4) {
+        resultBox.innerText = "請完整輸入姓名與身分證後四碼。";
+        return;
+      }
+
+      const match = data.find(item => item["姓名"] === name && item["身分證後4碼"] === id4);
+
+      if (match) {
+        resultBox.innerHTML = `
+          ✅ 查詢成功！<br><br>
+          姓名：${match["姓名"]}<br>
+          投開票所編號：${match["投開票所編號"]}<br>
+          投開票所地點：${match["投開票所地點"]}<br>
+          工作職稱：${match["工作職稱"]}
+        `;
+      } else {
+        resultBox.innerText = "❌ 查無符合資料，請確認輸入是否正確。";
+      }
+    }
+  </script>
+</body>
+</html>
